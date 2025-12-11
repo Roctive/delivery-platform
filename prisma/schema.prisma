@@ -1,0 +1,170 @@
+// Prisma Schema for Delivery Platform
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== USER & AUTH ====================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  password      String
+  role          String    @default("DRIVER") // ADMIN, DRIVER
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  driverProfile DriverProfile?
+  deliveries    Delivery[]
+}
+
+model DriverProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Driver info
+  vehicle      String?
+  licensePlate String?
+  phone        String
+  isAvailable  Boolean @default(true)
+
+  // Statistics
+  totalDeliveries Int   @default(0)
+  successRate     Float @default(100.0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Inventory
+  inventory DriverInventory[]
+}
+
+// ==================== PRODUCTS ====================
+
+model Product {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  category    String? // e.g., "Colis", "Enveloppe", "Fragile"
+  unit        String  @default("pièce") // pièce, kg, litre, etc.
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  inventory     DriverInventory[]
+  deliveryItems DeliveryItem[]
+}
+
+model DriverInventory {
+  id       String @id @default(cuid())
+  quantity Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  driverProfileId String
+  driverProfile   DriverProfile @relation(fields: [driverProfileId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([driverProfileId, productId])
+}
+
+// ==================== CLIENT ====================
+
+model Client {
+  id           String  @id @default(cuid())
+  name         String
+  company      String?
+  phone        String
+  instructions String?
+  
+  // Telegram integration
+  telegramChatId   String? @unique
+  telegramUsername String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deliveries Delivery[]
+}
+
+// ==================== DELIVERY ====================
+
+model Delivery {
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  status          String   @default("PENDING") // PENDING, ASSIGNED, IN_TRANSIT, HIDDEN, DELIVERED, CANCELLED, PROBLEM
+  
+  // Client info (snapshot)
+  clientName      String
+  clientPhone     String
+  
+  // Address
+  pickupAddress   String?
+  deliveryAddress String
+  
+  // Details
+  instructions    String?
+  priority        String   @default("NORMAL") // NORMAL, URGENT
+  
+  // Timing
+  maxDeliveryTime       DateTime
+  estimatedDeliveryTime DateTime?
+  
+  // Telegram notifications
+  telegramNotificationSent Boolean @default(false)
+  
+  // Relations
+  driverId        String?
+  driver          User?    @relation(fields: [driverId], references: [id])
+  
+  clientId        String?
+  client          Client?  @relation(fields: [clientId], references: [id])
+  
+  items           DeliveryItem[]
+  hidingSpot      HidingSpot?
+}
+
+model DeliveryItem {
+  id       String @id @default(cuid())
+  quantity Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  deliveryId String
+  delivery   Delivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model HidingSpot {
+  id                   String  @id @default(cuid())
+  photoUrl             String
+  latitude             Float
+  longitude            Float
+  description          String?
+  distanceFromAddress  Float   // in meters
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  deliveryId String   @unique
+  delivery   Delivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+}
