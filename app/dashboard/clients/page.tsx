@@ -110,16 +110,14 @@ export default function ClientsPage() {
                                         </div>
                                     </div>
 
-                                    <div className="flex-1 grid md:grid-cols-2 gap-4 w-full md:w-auto">
-                                        <div className="text-sm">
-                                            <p className="text-xs font-medium text-slate-500 uppercase mb-1">Récupération par défaut</p>
-                                            <p className="truncate">{client.pickupAddress}</p>
+
+                                    {client.instructions && (
+                                        <div className="flex-1 text-sm">
+                                            <p className="text-xs font-medium text-slate-500 uppercase mb-1">Instructions</p>
+                                            <p className="truncate">{client.instructions}</p>
                                         </div>
-                                        <div className="text-sm">
-                                            <p className="text-xs font-medium text-slate-500 uppercase mb-1">Livraison par défaut</p>
-                                            <p className="truncate">{client.deliveryAddress}</p>
-                                        </div>
-                                    </div>
+                                    )}
+
 
                                     <Button variant="ghost" size="sm">
                                         <MoreHorizontal size={20} />
