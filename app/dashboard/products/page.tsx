@@ -72,19 +72,19 @@ export default function ProductsPage() {
             {/* Filter Tabs */}
             <div className="flex gap-2">
                 <Button
-                    variant={filter === "active" ? "default" : "ghost"}
+                    variant={filter === "active" ? undefined : "ghost"}
                     onClick={() => setFilter("active")}
                 >
                     Actifs
                 </Button>
                 <Button
-                    variant={filter === "all" ? "default" : "ghost"}
+                    variant={filter === "all" ? undefined : "ghost"}
                     onClick={() => setFilter("all")}
                 >
                     Tous
                 </Button>
                 <Button
-                    variant={filter === "inactive" ? "default" : "ghost"}
+                    variant={filter === "inactive" ? undefined : "ghost"}
                     onClick={() => setFilter("inactive")}
                 >
                     Inactifs
@@ -118,8 +118,8 @@ export default function ProductsPage() {
                                         </div>
                                     </div>
                                     <span className={`px-2 py-1 text-xs rounded-full ${product.isActive
-                                            ? "bg-green-100 text-green-700"
-                                            : "bg-slate-100 text-slate-700"
+                                        ? "bg-green-100 text-green-700"
+                                        : "bg-slate-100 text-slate-700"
                                         }`}>
                                         {product.isActive ? "Actif" : "Inactif"}
                                     </span>
