@@ -17,7 +17,7 @@ import { User, DriverProfile } from "@prisma/client"
 
 type DriverWithProfile = User & {
     driverProfile: DriverProfile | null
-    assignedDeliveries: unknown[]
+    deliveries: unknown[]
 }
 
 export default function DriversPage() {
@@ -136,9 +136,9 @@ export default function DriversPage() {
                                             }`}>
                                             {driver.driverProfile?.isAvailable ? 'Disponible' : 'Indisponible'}
                                         </span>
-                                        {driver.assignedDeliveries.length > 0 && (
+                                        {driver.deliveries.length > 0 && (
                                             <span className="text-xs text-blue-600 font-medium">
-                                                {driver.assignedDeliveries.length} en cours
+                                                {driver.deliveries.length} en cours
                                             </span>
                                         )}
                                     </div>

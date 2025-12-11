@@ -10,7 +10,7 @@ export async function GET() {
             },
             include: {
                 driverProfile: true,
-                assignedDeliveries: {
+                deliveries: {
                     where: {
                         status: {
                             in: ["ASSIGNED", "PICKING_UP", "IN_TRANSIT"]

@@ -15,7 +15,7 @@ export async function GET(
             where: { id },
             include: {
                 driverProfile: true,
-                assignedDeliveries: {
+                deliveries: {
                     orderBy: {
                         createdAt: "desc"
                     }
